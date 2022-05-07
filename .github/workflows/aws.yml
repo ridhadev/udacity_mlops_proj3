@@ -14,19 +14,34 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     environment: DEV
     
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Install AWS CLI
-      
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8.12
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.8.12"
+    - name: Install dependencies
       run: |
-        aws --profile default configure set aws_access_key_id AKIAWCQCTJRUPM47D2RA
-        aws --profile default configure set aws_secret_access_key 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
-        aws --profile default configure set output json
-        aws --profile default configure set region us-east-1
-        aws s3 ls
- 
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Configure AWS Credentials Action For GitHub Actions
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{secrets.AWS_REGION}}
+    - uses: iterative/setup-dvc@v1
+    - run:  dvc pull
+    - name: Test with pytest
+      run: |
+        pytest
