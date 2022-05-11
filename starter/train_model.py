@@ -20,7 +20,8 @@ CAT_FEATURES = [
     "native-country",
 ]
 
-def save_model(models_folder: str, model, encoder, lb)-> None:
+
+def save_model(models_folder: str, model, encoder, lb) -> None:
     """
     Save the input model and feature transformers into a models_folder.
     Create the models_folder if it does not exist.
@@ -59,6 +60,7 @@ def save_model(models_folder: str, model, encoder, lb)-> None:
                 models_folder,
                 "model.pkl"),
             'wb'))
+
 
 def train_and_save_model(data_filepath: str, models_folder: str) -> None:
     """

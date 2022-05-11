@@ -4,6 +4,8 @@ import pandas as pd
 from starter.ml.data import process_data
 
 # Optional: implement hyperparameter tuning.
+
+
 def train_model(X_train, y_train):
     """
     Trains a machine learning model and returns it.
@@ -63,7 +65,12 @@ def inference(model, X):
     return model.predict(X)
 
 
-def compute_model_metrics_by_slice(data: pd.DataFrame, model, encoder, lb, slices_features):
+def compute_model_metrics_by_slice(
+        data: pd.DataFrame,
+        model,
+        encoder,
+        lb,
+        slices_features):
     """
     Evaluates the performance of the input model on all categorical slices features of the input data.
 
@@ -86,8 +93,8 @@ def compute_model_metrics_by_slice(data: pd.DataFrame, model, encoder, lb, slice
         for slice_val in set(data[slice_cat].values):
             slice_data = data[data[slice_cat] == slice_val].copy()
 
-            xslice, yslice, _, _ = process_data(slice_data, categorical_features=slices_features, label="salary",
-                                                training=False, encoder=encoder, lb=lb)
+            xslice, yslice, _, _ = process_data(
+                slice_data, categorical_features=slices_features, label="salary", training=False, encoder=encoder, lb=lb)
             y_predict = inference(model, xslice)
 
             results = compute_model_metrics(yslice, y_predict)

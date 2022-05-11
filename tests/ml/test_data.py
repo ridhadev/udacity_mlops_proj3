@@ -4,8 +4,6 @@ import pickle
 
 import pandas as pd
 import pytest
-from sklearn.preprocessing._encoders import OneHotEncoder
-from sklearn.preprocessing._label import LabelBinarizer
 from starter.ml.data import process_data
 from starter.train_model import CAT_FEATURES
 
