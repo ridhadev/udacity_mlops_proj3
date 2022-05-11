@@ -1,6 +1,7 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.ensemble import RandomForestClassifier
-
+import pandas as pd
+from starter.ml.data import process_data
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train):
@@ -18,7 +19,6 @@ def train_model(X_train, y_train):
     model
         Trained machine learning model.
     """
-
     model = RandomForestClassifier(min_samples_split=30)
     model.fit(X_train, y_train)
     return model
@@ -61,3 +61,41 @@ def inference(model, X):
         Predictions from the model.
     """
     return model.predict(X)
+
+
+def compute_model_metrics_by_slice(data: pd.DataFrame, model, encoder, lb, slices_features):
+    """
+    Evaluates the performance of the input model on all categorical slices features of the input data.
+
+    Parameters
+    ----------
+    data: Input Data
+    model: Sklearn model
+    encoder: sklearn.preprocessing._encoders.OneHotEncoder
+    lb: sklearn.preprocessing._label.LabelBinarizer
+    slices_features
+
+    Returns
+    -------
+    Data Frame with the category name, slice name and corresponding metrics at each row.
+    The category and slice names are set as index.
+    """
+    slice_results = []
+    for slice_cat in slices_features:
+
+        for slice_val in set(data[slice_cat].values):
+            slice_data = data[data[slice_cat] == slice_val].copy()
+
+            xslice, yslice, _, _ = process_data(slice_data, categorical_features=slices_features, label="salary",
+                                                training=False, encoder=encoder, lb=lb)
+            y_predict = inference(model, xslice)
+
+            results = compute_model_metrics(yslice, y_predict)
+            results_dict = dict(zip(("precision", "recall", "fbeta"), results))
+            results_dict["slice_category"] = slice_cat
+            results_dict["slice_value"] = slice_val
+            results_dict["count"] = slice_data.shape[0]
+            slice_results.append(results_dict)
+
+    return pd.DataFrame(slice_results).set_index(["slice_category", "slice_value"]).sort_values(
+        ["slice_category", "fbeta", "slice_value"])
