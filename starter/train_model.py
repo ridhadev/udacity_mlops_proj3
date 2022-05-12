@@ -106,6 +106,35 @@ def train_and_save_model(data_filepath: str, models_folder: str) -> None:
     metrics_by_slice_df.to_csv("metrics_by_slice.csv")
 
 
+def create_model_card(model_metrics):
+    model_card_template = \
+    """
+        # Model Card
+    This card is generated on {} to summarize last model performance for the project, version {}
+
+    ## Model Details
+
+    ## Intended Use
+
+    ## Training Data
+    Training data can be found in 
+    ## Evaluation Data
+    Data was randomly split into two groups 80-20%. The smaller used as test or evaluation dataset.
+    
+    ## Metrics
+    Last results are the following: 
+        - Precision : {}
+        - Recall : {}
+        - F1 Score: {}
+        
+    ## Ethical Considerations
+
+    ## Caveats and Recommendations
+    
+    """
+    pass
+
+
 if __name__ == "__main__":
     # Add code to load in the data.
     data_filepath = os.path.realpath(
