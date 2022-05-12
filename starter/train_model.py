@@ -1,13 +1,39 @@
 # Script to train machine learning model.
-import pandas as pd
-from sklearn.model_selection import train_test_split
-
-# Add the necessary imports for the starter code.
 import os
-from starter.ml.data import process_data
-from starter.ml.model import train_model, inference, compute_model_metrics, compute_model_metrics_by_slice
+import pandas as pd
 import pickle
 import logging
+from datetime import datetime
+from sklearn.model_selection import train_test_split
+from starter.ml.data import process_data
+from starter.ml.model import train_model, inference, compute_model_metrics, compute_model_metrics_by_slice
+
+
+MODEL_CARD_TEMPLATE = '''
+## Model Card
+__MODEL_CARD_DESC__
+
+## Model Details
+__MODEL_DETAILS_DESC__
+
+## Intended Use
+__INTENDED_USE_DESC__
+
+## Training Data
+__TRAIN_DATA_DESC__
+
+## Evaluation Data
+__EVAL_DATA_DESC__
+
+## Metrics
+__METRICS_DESC__
+
+## Ethical Considerations
+__ETHICAL_DESC__
+
+## Caveats and Recommendations
+__RECO_DESC__
+    '''
 
 CAT_FEATURES = [
     "workclass",
@@ -62,10 +88,13 @@ def save_model(models_folder: str, model, encoder, lb) -> None:
             'wb'))
 
 
-def train_and_save_model(data_filepath: str, models_folder: str) -> None:
+def train_and_save_model(data_filepath: str, models_folder: str) -> tuple:
     """
     Train the predictive model using input data located at data_filepath
     and save the trained model under models_folder.
+
+    The method evaluate the model on categorical's model slices
+    see: compute_model_metrics_by_slice
 
     Parameters
     ----------
@@ -74,7 +103,7 @@ def train_and_save_model(data_filepath: str, models_folder: str) -> None:
 
     Returns
     -------
-        None
+        Model overall metrics as a tuple, respectively: precision, recall and f1-score.
     """
     logging.info(f"Reading file '{data_filepath}'...")
     data = pd.read_csv(data_filepath)
@@ -99,41 +128,66 @@ def train_and_save_model(data_filepath: str, models_folder: str) -> None:
     y_predict = inference(trained_model, X_test)
     overall_metrics = compute_model_metrics(y_test, y_predict)
 
-    print(f"Overall metrics : {overall_metrics}")
-
     metrics_by_slice_df = compute_model_metrics_by_slice(
         data, trained_model, encoder, lb, CAT_FEATURES)
     metrics_by_slice_df.to_csv("metrics_by_slice.csv")
 
+    return overall_metrics
 
-def create_model_card(model_metrics):
-    model_card_template = \
+
+def create_model_card(precision, recall, f1):
+
+    mod_card_desc = f"This card was generated on _{datetime.now():%Y-%m-%d %H:%M}_ \
+    to summarize last model performance for the project __Census Income Data Set__"
+
+    mod_details_desc = """
+The predictive model is based on three part :
+    - A **label binarizer** to convert the target income column into a binary data
+    - An **encoder** to convert categorical features into digital ones
+    - A **random forest** classifier to predict the income category ( > or < 50k)
     """
-        # Model Card
-    This card is generated on {} to summarize last model performance for the project, version {}
-
-    ## Model Details
-
-    ## Intended Use
-
-    ## Training Data
-    Training data can be found in 
-    ## Evaluation Data
-    Data was randomly split into two groups 80-20%. The smaller used as test or evaluation dataset.
-    
-    ## Metrics
-    Last results are the following: 
-        - Precision : {}
-        - Recall : {}
-        - F1 Score: {}
-        
-    ## Ethical Considerations
-
-    ## Caveats and Recommendations
-    
+    mod_use_desc = """
+Predict whether income exceeds $50K/yr based on census data.
+"""
+    train_data_desc = """
+The used dataset and relative details can be found [here](https://archive.ics.uci.edu/ml/datasets/census+income)
     """
-    pass
+    eval_data_desc = """
+The dataset was split randomly into 80% data for training and 20% for model evaluation.
+    """
 
+    metrics_desc = f"The current metrics of the model is as following:\n\n\
+    - Precision : {precision:.3f}\n\
+    - Recall    : {recall:.3f}\n\
+    - F1 Score  : {f1:.3f}\n\
+    "
+
+    ethical_desc = """
+    Even though this data is completely anonymous and open to the public,
+    it contains sensitive data relating to people's private lives such
+    as their income levels, origins...
+
+    Users of this data should pay particular attention to the biases
+    that may exist or be introduced in order not to favor or disadvantage
+    one category of the population over another.
+    """
+
+    reco_desc = """
+    The use and application of all or part of this model and these results
+    are the entire responsibility of the user.
+"""
+
+    card_md = MODEL_CARD_TEMPLATE.replace("__MODEL_CARD_DESC__", mod_card_desc)
+    card_md = card_md.replace("__MODEL_DETAILS_DESC__", mod_details_desc)
+    card_md = card_md.replace("__INTENDED_USE_DESC__", mod_use_desc)
+    card_md = card_md.replace("__TRAIN_DATA_DESC__", train_data_desc)
+    card_md = card_md.replace("__EVAL_DATA_DESC__", eval_data_desc)
+
+    card_md = card_md.replace("__METRICS_DESC__", metrics_desc)
+    card_md = card_md.replace("__ETHICAL_DESC__", ethical_desc)
+    card_md = card_md.replace("__RECO_DESC__", reco_desc)
+
+    return card_md
 
 if __name__ == "__main__":
     # Add code to load in the data.
@@ -154,4 +208,9 @@ if __name__ == "__main__":
             '..',
             'models')
     )
-    train_and_save_model(data_filepath, models_folder)
+
+    metrics = train_and_save_model(data_filepath, models_folder)
+
+    model_card_content = create_model_card(*metrics)
+    with open(os.path.join(models_folder, "model_card.md"), "w") as md:
+        md.write(model_card_content)
