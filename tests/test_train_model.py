@@ -1,7 +1,7 @@
 import os
 import shutil
 import pytest
-from starter.train_model import save_model
+from starter.train_model import save_model, create_model_card
 from sklearn.preprocessing._encoders import OneHotEncoder
 from sklearn.preprocessing._label import LabelBinarizer
 from sklearn.ensemble import RandomForestClassifier
@@ -43,3 +43,10 @@ def test_save_models(tmp_folder):
     assert os.path.exists(os.path.join(tmp_folder, "encoder.pkl"))
     assert os.path.exists(os.path.join(tmp_folder, "label_binarizer.pkl"))
     assert os.path.exists(os.path.join(tmp_folder, "model.pkl"))
+
+
+def test_create_model_card():
+    """Test generation of model cards"""
+    p, r, f1 = 0.612345, 0.97999, 0.74999
+    md = create_model_card(p, r, f1)
+    assert md

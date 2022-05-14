@@ -23,9 +23,9 @@ def test_data():
 
 
 @pytest.fixture
-def test_folder():
+def tmp_folder():
     """Creates a temporary test folder"""
-    test_folder_path = "tests"
+    test_folder_path = "__TMP__"
     os.makedirs(test_folder_path, exist_ok=True)
     yield test_folder_path
     shutil.rmtree(test_folder_path)
@@ -36,7 +36,7 @@ def test_cat_features_in_data(test_data):
     assert set(CAT_FEATURES).issubset(set(test_data.columns))
 
 
-def test_process_data_with_train(test_data, test_folder):
+def test_process_data_with_train(test_data, tmp_folder):
     """Test the process data is working in training mode"""
 
     X_train, y_train, encoder, lb = process_data(
@@ -51,11 +51,11 @@ def test_process_data_with_train(test_data, test_folder):
         encoder,
         open(
             os.path.join(
-                test_folder,
+                tmp_folder,
                 "encoder.pkl"),
             'wb'))
 
-    assert os.path.exists(os.path.join(test_folder, "encoder.pkl"))
+    assert os.path.exists(os.path.join(tmp_folder, "encoder.pkl"))
 
 
 def test_process_data_no_train(test_data):
