@@ -4,12 +4,12 @@ import pickle
 
 import pandas as pd
 import pytest
-from starter.ml.data import process_data
-from starter.train_model import CAT_FEATURES
+from ml.data import process_data
+from train_model import CAT_FEATURES
 
 
 @pytest.fixture
-def test_data():
+def test_data(scope="session"):
     """Loads the sample test data for clean census"""
     data_filepath = os.path.realpath(
         os.path.join(
@@ -23,7 +23,7 @@ def test_data():
 
 
 @pytest.fixture
-def tmp_folder():
+def tmp_folder(scope="session"):
     """Creates a temporary test folder"""
     test_folder_path = "__TMP__"
     os.makedirs(test_folder_path, exist_ok=True)

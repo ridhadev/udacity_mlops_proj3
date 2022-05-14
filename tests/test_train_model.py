@@ -1,16 +1,13 @@
 import os
 import shutil
 import pytest
-from starter.train_model import save_model, create_model_card
 from sklearn.preprocessing._encoders import OneHotEncoder
 from sklearn.preprocessing._label import LabelBinarizer
 from sklearn.ensemble import RandomForestClassifier
-
-from starter.train_model import CAT_FEATURES
-
+from train_model import save_model, create_model_card, CAT_FEATURES
 
 @pytest.fixture
-def tmp_folder():
+def tmp_folder(scope="session"):
     """Creates a temporary test folder"""
     test_folder_path = "__TMP__"
     os.makedirs(test_folder_path, exist_ok=True)
@@ -20,6 +17,7 @@ def tmp_folder():
 
 def test_categorical_features():
     """Test all categorical features are those excpected and have not changed"""
+
     assert sorted(CAT_FEATURES) == sorted(
         ['education',
          'marital-status',

@@ -1,5 +1,5 @@
 
-from starter.ml.model import compute_model_metrics
+from ml.model import compute_model_metrics
 import pytest
 
 

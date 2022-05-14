@@ -5,8 +5,8 @@ import pickle
 import logging
 from datetime import datetime
 from sklearn.model_selection import train_test_split
-from starter.ml.data import process_data
-from starter.ml.model import train_model, inference, compute_model_metrics, compute_model_metrics_by_slice
+from ml.data import process_data
+from ml.model import train_model, inference, compute_model_metrics, compute_model_metrics_by_slice
 
 
 MODEL_CARD_TEMPLATE = '''
@@ -136,6 +136,9 @@ def train_and_save_model(data_filepath: str, models_folder: str) -> tuple:
 
 
 def create_model_card(precision, recall, f1):
+    """
+    Generate model card documenting the generated model.
+    """
 
     mod_card_desc = f"This card was generated on _{datetime.now():%Y-%m-%d %H:%M}_ \
     to summarize last model performance for the project __Census Income Data Set__"
@@ -146,6 +149,7 @@ The predictive model is based on three part :
     - An **encoder** to convert categorical features into digital ones
     - A **random forest** classifier to predict the income category ( > or < 50k)
     """
+
     mod_use_desc = """
 Predict whether income exceeds $50K/yr based on census data.
 """
@@ -188,6 +192,7 @@ The dataset was split randomly into 80% data for training and 20% for model eval
     card_md = card_md.replace("__RECO_DESC__", reco_desc)
 
     return card_md
+
 
 if __name__ == "__main__":
     # Add code to load in the data.
