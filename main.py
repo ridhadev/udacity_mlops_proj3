@@ -9,9 +9,9 @@ starter_root = os.path.realpath(
             'starter'
         )
     )
-print(starter_root)
+
 sys.path.insert(0, starter_root)
-print(sys.path)
+
 import pickle
 
 from train_model import CAT_FEATURES
@@ -22,7 +22,12 @@ from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI
 
 
-
+# Make a DVC pull on runtime on Heroku
+if "DYNO" in os.environ and os.path.isdir(".dvc"):
+    os.system("dvc config core.no_scm true")
+    if os.system(f"dvc pull") != 0:
+        exit("dvc pull failed")
+    os.system("rm -r .dvc .apt/usr/lib/dvc")
 
 class IncomeData(BaseModel):
     age: int = Field(example="37")
@@ -79,7 +84,7 @@ async def hello_world():
 
 
 @app.post('/prediction/')
-def predict(data: IncomeData):
+async def predict(data: IncomeData):
 
     models_dir = os.path.realpath(
         os.path.join(
