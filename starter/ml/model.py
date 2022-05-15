@@ -78,8 +78,8 @@ def compute_model_metrics_by_slice(
     ----------
     data: Input Data
     model: Sklearn model
-    encoder: sklearn.preprocessing._encoders.OneHotEncoder
-    lb: sklearn.preprocessing._label.LabelBinarizer
+    encoder: sklearn.preprocessing.OneHotEncoder
+    lb: sklearn.preprocessing.LabelBinarizer
     slices_features
 
     Returns

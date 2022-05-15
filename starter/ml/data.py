@@ -29,9 +29,9 @@ def process_data(
         for y (default=None)
     training : bool
         Indicator if training mode or inference/validation mode.
-    encoder : sklearn.preprocessing._encoders.OneHotEncoder
+    encoder : sklearn.preprocessing.OneHotEncoder
         Trained sklearn OneHotEncoder, only used if training=False.
-    lb : sklearn.preprocessing._label.LabelBinarizer
+    lb : sklearn.preprocessing.LabelBinarizer
         Trained sklearn LabelBinarizer, only used if training=False.
 
     Returns

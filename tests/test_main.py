@@ -1,16 +1,12 @@
-import sys
-
-sys.path.append('../')
 from main import app
 from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
-
 def test_hello_world():
     r = client.get('/')
     assert r.status_code == 200
-    assert r.content == b"{\"message\":\"Welcome to Census Income FastAPI app.\"}"
+    assert r.json() == {"message":"Welcome to Census Income FastAPI app."}
 
 
 def test_negative_predict():
@@ -34,7 +30,7 @@ def test_negative_predict():
     # json argument expects a dict
     r = client.post("/prediction/", json=income_data)
     assert r.status_code == 200
-    assert r.content == b"{\"predict\":\"<=50K\"}"
+    assert r.json() == {"predict":"<=50K"}
 
 
 def test_positive_predict():
@@ -58,4 +54,4 @@ def test_positive_predict():
     }
     r = client.post("/prediction/", json=income_data)
     assert r.status_code == 200
-    assert r.content == b"{\"predict\":\">50K\"}"
+    assert r.json() == {"predict":">50K"}

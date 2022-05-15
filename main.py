@@ -1,16 +1,27 @@
 # Put the code for your API here.
 """Implements RESTful API using FastAPI
 """
+import sys
+import os
+starter_root = os.path.realpath(
+        os.path.join(
+            os.path.dirname(__file__),
+            'starter'
+        )
+    )
+print(starter_root)
+sys.path.insert(0, starter_root)
+print(sys.path)
+import pickle
+
 from train_model import CAT_FEATURES
 from ml.data import process_data
 import pandas as pd
 from pydantic import BaseModel, Field
 from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI
-import os
-import pickle
-import sys
-sys.path.append('./starter')
+
+
 
 
 class IncomeData(BaseModel):
