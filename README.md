@@ -1,5 +1,23 @@
-Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
+# Udacity Machine Learning Project
+- Git Repository (public) : `https://github.com/ridhadev/udacity_mlops_proj3`
+- Heroku project          : `https://udacity-mlops-proj3.herokuapp.com/`
 
+Content of this project (`all paths are relative to the project root directory`):
+- All source code under `./starter` with 
+- Data files pulled from DVC are under `./data` folder
+- Model files pulled from DVC are under `./models` folder
+- FastAPI main app file is under `./main.py`
+- All tests are under : `./tests` folder
+- The generated model (from `train_model.py`) card using provided template is under `model_card.md`
+- The generated slices evaluation (from `train_model.py`) is under `slice_output.txt`. 
+  The output is with CSV format, so it can easily read with pandas.
+- All requested screenshots are under `./screenshots` folder
+
+
+#---------------------------------------------------------------------------
+As a reminder, here is the original project specifications:
+
+Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
 # Environment Set up
 * Download and install conda if you don’t have it already.
     * Use the supplied requirements file to create a new environment, or
