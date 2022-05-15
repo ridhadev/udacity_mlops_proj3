@@ -132,7 +132,13 @@ def train_and_save_model(data_filepath: str, models_folder: str) -> tuple:
 
     metrics_by_slice_df = compute_model_metrics_by_slice(
         data, trained_model, encoder, lb, CAT_FEATURES)
-    metrics_by_slice_df.to_csv("metrics_by_slice.csv")
+
+    root_folder = os.path.realpath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..')
+    )
+    metrics_by_slice_df.to_csv(os.path.join(root_folder, "slice_output.txt"))
 
     return overall_metrics
 

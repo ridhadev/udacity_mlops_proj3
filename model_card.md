@@ -1,6 +1,6 @@
 
 ## Model Card
-This card was generated on _2022-05-15 14:31_     to summarize last model performance for the project __Census Income Data Set__
+This card was generated on _2022-05-15 14:48_     to summarize last model performance for the project __Census Income Data Set__
 
 ## Model Details
 
@@ -29,9 +29,9 @@ The dataset was split randomly into 80% data for training and 20% for model eval
 ## Metrics
 The current metrics of the model is as following:
 
-    - Precision : 0.780
-    - Recall    : 0.634
-    - F1 Score  : 0.700
+    - Precision : 0.778
+    - Recall    : 0.608
+    - F1 Score  : 0.683
     
 
 ## Ethical Considerations
