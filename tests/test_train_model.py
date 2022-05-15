@@ -6,6 +6,7 @@ from sklearn.preprocessing._label import LabelBinarizer
 from sklearn.ensemble import RandomForestClassifier
 from train_model import save_model, create_model_card, CAT_FEATURES
 
+
 @pytest.fixture
 def tmp_folder(scope="session"):
     """Creates a temporary test folder"""
@@ -17,7 +18,6 @@ def tmp_folder(scope="session"):
 
 def test_categorical_features():
     """Test all categorical features are those excpected and have not changed"""
-
     assert sorted(CAT_FEATURES) == sorted(
         ['education',
          'marital-status',

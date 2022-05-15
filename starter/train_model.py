@@ -4,6 +4,8 @@ import pandas as pd
 import pickle
 import logging
 from datetime import datetime
+from sklearn.preprocessing import OneHotEncoder, LabelBinarizer
+from sklearn.base import BaseEstimator
 from sklearn.model_selection import train_test_split
 from ml.data import process_data
 from ml.model import train_model, inference, compute_model_metrics, compute_model_metrics_by_slice
@@ -47,21 +49,21 @@ CAT_FEATURES = [
 ]
 
 
-def save_model(models_folder: str, model, encoder, lb) -> None:
+def save_model(
+        models_folder: str,
+        model: BaseEstimator,
+        encoder: OneHotEncoder,
+        lb: LabelBinarizer) -> None:
     """
     Save the input model and feature transformers into a models_folder.
     Create the models_folder if it does not exist.
 
     Parameters
     ----------
-    models_folder
-    model
-    encoder
-    lb
-
-    Returns
-    -------
-
+    models_folder : Path where models file will be saved
+    model : Trained ML Model to save
+    encoder : categorical features encoder to save
+    lb: Label Binarizer to save
     """
     os.makedirs(models_folder, exist_ok=True)
 
