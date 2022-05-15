@@ -30,10 +30,16 @@ logger = logging.getLogger()
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     logger.info("Enter DYNO dvc pull...")
     os.system("dvc config core.no_scm true")
+    os.system(f"git init")
     exit_code = os.system(f"dvc pull")
     if exit_code != 0:
-        exit(f"dvc pull failed with code {exit_code}")
-    os.system("rm -r .dvc .apt/usr/lib/dvc")
+        if not os.path.isdir("models"):
+            logger.error("DVC pull failed and no 'models' folder found")
+            exit(f"dvc pull failed with code {exit_code}")
+        else :
+            logger.warning("DVC pull failed, re-using existing 'models' folder")
+
+        os.system("rm -r .dvc .apt/usr/lib/dvc")
 
 class IncomeData(BaseModel):
     """Census income data as per training dataset"""
@@ -84,7 +90,6 @@ def load_models(model_folder_path: str):
 
 
 app = FastAPI()
-
 
 @app.get("/")
 async def hello_world():
