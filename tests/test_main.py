@@ -1,4 +1,7 @@
-from api import app
+import sys
+
+sys.path.append('../')
+from main import app
 from fastapi.testclient import TestClient
 
 client = TestClient(app)

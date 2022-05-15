@@ -147,9 +147,10 @@ def create_model_card(precision, recall, f1):
 
     mod_details_desc = """
 The predictive model is based on three part :
-    - A **label binarizer** to convert the target income column into a binary data
-    - An **encoder** to convert categorical features into digital ones
-    - A **random forest** classifier to predict the income category ( > or < 50k)
+
+    - A label binarizer to convert the target income column into a binary data
+    - An encoder to convert categorical features into digital ones
+    - A random forest classifier to predict the income category ( > or < 50k)
     """
 
     mod_use_desc = """
@@ -209,15 +210,20 @@ if __name__ == "__main__":
         raise FileNotFoundError(
             f"Failed to find data file in : '{data_filepath}'")
 
-    models_folder = os.path.realpath(
+    root_folder = os.path.realpath(
         os.path.join(
             os.path.dirname(__file__),
-            '..',
+            '..')
+    )
+
+    models_folder = os.path.realpath(
+        os.path.join(
+            root_folder,
             'models')
     )
 
     metrics = train_and_save_model(data_filepath, models_folder)
 
     model_card_content = create_model_card(*metrics)
-    with open(os.path.join(models_folder, "model_card.md"), "w") as md:
+    with open(os.path.join(root_folder, "model_card.md"), "w") as md:
         md.write(model_card_content)
