@@ -3,6 +3,8 @@
 """
 import sys
 import os
+import logging
+
 starter_root = os.path.realpath(
         os.path.join(
             os.path.dirname(__file__),
@@ -21,15 +23,21 @@ from pydantic import BaseModel, Field
 from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+logger = logging.getLogger()
 
 # Make a DVC pull on runtime on Heroku
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
+    logger.info("Enter DYNO dvc pull...")
     os.system("dvc config core.no_scm true")
-    if os.system(f"dvc pull") != 0:
-        exit("dvc pull failed")
+    exit_code = os.system(f"dvc pull")
+    if exit_code != 0:
+        exit(f"dvc pull failed with code {exit_code}")
     os.system("rm -r .dvc .apt/usr/lib/dvc")
 
 class IncomeData(BaseModel):
+    """Census income data as per training dataset"""
+
     age: int = Field(example="37")
     workclass: str = Field(
         example="Private, Self-emp-not-inc, Self-emp-inc, Federal-gov,\
@@ -85,24 +93,25 @@ async def hello_world():
 
 @app.post('/prediction/')
 async def predict(data: IncomeData):
-
+    logger.info(f"Enter predict post command {data}")
     models_dir = os.path.realpath(
         os.path.join(
             os.path.dirname(__file__),
             'models')
     )
-
+    logger.info(f"Loading models files")
     model, encoder, lb = load_models(models_dir)
+    logger.info(f"Model files loaded.")
 
     json_dict = jsonable_encoder(data)
     input_data = pd.DataFrame.from_dict([json_dict], orient='columns')
     input_data = input_data.rename(columns=lambda x: x.replace('_', '-'))
-
+    logger.info(f"Processing data....")
     x, _, _, _ = process_data(input_data, categorical_features=CAT_FEATURES,
                               label=None, training=False, encoder=encoder, lb=lb)
-
+    logger.info(f"Predicting....")
     y_pred = model.predict(x)
-
+    logger.info(f"Reversing prediction {y_pred}....")
     y_pred_label = lb.inverse_transform(y_pred)[0]
 
     return {"predict": y_pred_label}
